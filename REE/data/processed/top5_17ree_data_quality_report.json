@@ -1,0 +1,18 @@
+{
+  "scope": "Top 5 rare-earth reserve countries and 17 REE element locality distribution from Mindat.",
+  "api_key_used_preview": "3b54da...668c",
+  "country_count": 5,
+  "element_count": 17,
+  "raw_rows": 3546,
+  "clean_rows": 3546,
+  "analysis_ready_rows": 1338,
+  "unique_localities": 714,
+  "outputs": {
+    "clean": "data\\processed\\top5_17ree_localities_clean.csv",
+    "analysis_ready": "data\\processed\\top5_17ree_localities_analysis_ready.csv",
+    "summary": "data\\processed\\top5_17ree_distribution_summary.csv",
+    "matrix": "data\\processed\\top5_17ree_distribution_matrix.csv",
+    "countries": "data\\processed\\top5_ree_reserve_countries.csv",
+    "elements": "data\\processed\\ree_17_elements.csv"
+  }
+}
