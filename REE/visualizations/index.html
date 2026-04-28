@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REE Visualization Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1e293b;
+      --muted: #64748b;
+      --line: #d7dde8;
+      --panel: #ffffff;
+      --accent: #2563eb;
+      --bg: #f6f8fb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    header {
+      padding: 24px 28px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: 0; }
+    h2 { margin: 24px 0 12px; font-size: 18px; }
+    p { margin: 0 0 10px; color: var(--muted); line-height: 1.55; }
+    main { padding: 20px 28px 32px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      overflow: auto;
+    }
+    .metric-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .metric { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: #fff; min-width: 150px; }
+    .metric strong { display: block; font-size: 22px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 12px 0; font-size: 13px; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+    svg { max-width: 100%; height: auto; display: block; }
+    .bar-label { font-size: 12px; fill: #334155; }
+    .axis-label { font-size: 12px; fill: #64748b; }
+    .tooltip {
+      position: fixed;
+      z-index: 9999;
+      max-width: 320px;
+      background: #0f172a;
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 6px;
+      pointer-events: none;
+      font-size: 12px;
+      line-height: 1.4;
+      opacity: 0;
+      transition: opacity .08s ease;
+    }
+    @media (max-width: 700px) {
+      header, main { padding-left: 16px; padding-right: 16px; }
+      h1 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>REE Mineral Visualization Dashboard</h1>
+  <p>World distribution, clustering results, and supporting charts generated from the processed Mindat REE locality dataset.</p>
+  <div class="metric-row">
+    <div class="metric"><strong>1338</strong>mineral records</div>
+    <div class="metric"><strong>714</strong>unique localities</div>
+    <div class="metric"><strong>10</strong>KMeans clusters</div>
+    <div class="metric"><strong>0.442</strong>silhouette score</div>
+  </div>
+</header>
+<main>
+  <section class="grid">
+    <div class="panel">
+      <h2>1. World Distribution Map</h2>
+      <p>Interactive map colored by queried mineral element. Use it to show where REE minerals appear globally.</p>
+      <a href="world_mineral_distribution_map.html">Open the map</a>
+    </div>
+    <div class="panel">
+      <h2>2. Clustering Result</h2>
+      <p>Cluster map and longitude-latitude scatter colored by cluster label.</p>
+      <a href="cluster_results.html">Open clustering results</a>
+    </div>
+    <div class="panel">
+      <h2>3. Supporting Charts</h2>
+      <p>Counts by cluster, mineral element, country, and REE group.</p>
+      <a href="auxiliary_charts.html">Open supporting charts</a>
+    </div>
+  </section>
+</main>
+
+
+</body>
+</html>

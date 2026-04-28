@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REE Supporting Charts</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1e293b;
+      --muted: #64748b;
+      --line: #d7dde8;
+      --panel: #ffffff;
+      --accent: #2563eb;
+      --bg: #f6f8fb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    header {
+      padding: 24px 28px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: 0; }
+    h2 { margin: 24px 0 12px; font-size: 18px; }
+    p { margin: 0 0 10px; color: var(--muted); line-height: 1.55; }
+    main { padding: 20px 28px 32px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      overflow: auto;
+    }
+    .metric-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .metric { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: #fff; min-width: 150px; }
+    .metric strong { display: block; font-size: 22px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 12px 0; font-size: 13px; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+    svg { max-width: 100%; height: auto; display: block; }
+    .bar-label { font-size: 12px; fill: #334155; }
+    .axis-label { font-size: 12px; fill: #64748b; }
+    .tooltip {
+      position: fixed;
+      z-index: 9999;
+      max-width: 320px;
+      background: #0f172a;
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 6px;
+      pointer-events: none;
+      font-size: 12px;
+      line-height: 1.4;
+      opacity: 0;
+      transition: opacity .08s ease;
+    }
+    @media (max-width: 700px) {
+      header, main { padding-left: 16px; padding-right: 16px; }
+      h1 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<style>
+  table { border-collapse: collapse; width: 100%; background: #fff; }
+  th, td { border: 1px solid var(--line); padding: 8px; text-align: right; font-size: 13px; }
+  th:first-child, td:first-child { text-align: left; }
+</style>
+<header>
+  <h1>Supporting Charts</h1>
+  <p>Simple summary views for explaining the clustering and mineral composition.</p>
+</header>
+<main>
+  <section class="grid">
+    <div class="panel">
+<svg viewBox="0 0 720 344" role="img" aria-label="Localities per Cluster">
+  <rect x="0" y="0" width="720" height="344" fill="#ffffff"></rect>
+  <text x="8" y="20" font-size="15" font-weight="700" fill="#1e293b">Localities per Cluster</text>
+  <text x="8" y="50" class="bar-label">0</text><rect x="150" y="34" width="510.0" height="19" fill="#2563eb" opacity="0.78"></rect><text x="668.0" y="49" class="bar-label">181</text><text x="8" y="80" class="bar-label">4</text><rect x="150" y="64" width="383.2" height="19" fill="#2563eb" opacity="0.78"></rect><text x="541.2" y="79" class="bar-label">136</text><text x="8" y="110" class="bar-label">7</text><rect x="150" y="94" width="273.3" height="19" fill="#2563eb" opacity="0.78"></rect><text x="431.3" y="109" class="bar-label">97</text><text x="8" y="140" class="bar-label">5</text><rect x="150" y="124" width="225.4" height="19" fill="#2563eb" opacity="0.78"></rect><text x="383.4" y="139" class="bar-label">80</text><text x="8" y="170" class="bar-label">6</text><rect x="150" y="154" width="222.6" height="19" fill="#2563eb" opacity="0.78"></rect><text x="380.6" y="169" class="bar-label">79</text><text x="8" y="200" class="bar-label">9</text><rect x="150" y="184" width="217.0" height="19" fill="#2563eb" opacity="0.78"></rect><text x="375.0" y="199" class="bar-label">77</text><text x="8" y="230" class="bar-label">3</text><rect x="150" y="214" width="93.0" height="19" fill="#2563eb" opacity="0.78"></rect><text x="251.0" y="229" class="bar-label">33</text><text x="8" y="260" class="bar-label">2</text><rect x="150" y="244" width="62.0" height="19" fill="#2563eb" opacity="0.78"></rect><text x="220.0" y="259" class="bar-label">22</text><text x="8" y="290" class="bar-label">8</text><rect x="150" y="274" width="14.1" height="19" fill="#2563eb" opacity="0.78"></rect><text x="172.1" y="289" class="bar-label">5</text><text x="8" y="320" class="bar-label">1</text><rect x="150" y="304" width="11.3" height="19" fill="#2563eb" opacity="0.78"></rect><text x="169.3" y="319" class="bar-label">4</text>
+</svg>
+</div>
+    <div class="panel">
+<svg viewBox="0 0 720 284" role="img" aria-label="Records per Mineral Element">
+  <rect x="0" y="0" width="720" height="284" fill="#ffffff"></rect>
+  <text x="8" y="20" font-size="15" font-weight="700" fill="#1e293b">Records per Mineral Element</text>
+  <text x="8" y="50" class="bar-label">Ce</text><rect x="150" y="34" width="510.0" height="19" fill="#f97316" opacity="0.78"></rect><text x="668.0" y="49" class="bar-label">510</text><text x="8" y="80" class="bar-label">Y</text><rect x="150" y="64" width="445.0" height="19" fill="#f97316" opacity="0.78"></rect><text x="603.0" y="79" class="bar-label">445</text><text x="8" y="110" class="bar-label">Nd</text><rect x="150" y="94" width="187.0" height="19" fill="#f97316" opacity="0.78"></rect><text x="345.0" y="109" class="bar-label">187</text><text x="8" y="140" class="bar-label">La</text><rect x="150" y="124" width="165.0" height="19" fill="#f97316" opacity="0.78"></rect><text x="323.0" y="139" class="bar-label">165</text><text x="8" y="170" class="bar-label">Sc</text><rect x="150" y="154" width="21.0" height="19" fill="#f97316" opacity="0.78"></rect><text x="179.0" y="169" class="bar-label">21</text><text x="8" y="200" class="bar-label">Yb</text><rect x="150" y="184" width="5.0" height="19" fill="#f97316" opacity="0.78"></rect><text x="163.0" y="199" class="bar-label">5</text><text x="8" y="230" class="bar-label">Sm</text><rect x="150" y="214" width="4.0" height="19" fill="#f97316" opacity="0.78"></rect><text x="162.0" y="229" class="bar-label">4</text><text x="8" y="260" class="bar-label">Gd</text><rect x="150" y="244" width="1.0" height="19" fill="#f97316" opacity="0.78"></rect><text x="159.0" y="259" class="bar-label">1</text>
+</svg>
+</div>
+    <div class="panel">
+<svg viewBox="0 0 720 194" role="img" aria-label="Records per Reserve Country">
+  <rect x="0" y="0" width="720" height="194" fill="#ffffff"></rect>
+  <text x="8" y="20" font-size="15" font-weight="700" fill="#1e293b">Records per Reserve Country</text>
+  <text x="8" y="50" class="bar-label">Russia</text><rect x="150" y="34" width="510.0" height="19" fill="#16a34a" opacity="0.78"></rect><text x="668.0" y="49" class="bar-label">477</text><text x="8" y="80" class="bar-label">Australia</text><rect x="150" y="64" width="372.1" height="19" fill="#16a34a" opacity="0.78"></rect><text x="530.1" y="79" class="bar-label">348</text><text x="8" y="110" class="bar-label">China</text><rect x="150" y="94" width="358.2" height="19" fill="#16a34a" opacity="0.78"></rect><text x="516.2" y="109" class="bar-label">335</text><text x="8" y="140" class="bar-label">Brazil</text><rect x="150" y="124" width="167.9" height="19" fill="#16a34a" opacity="0.78"></rect><text x="325.9" y="139" class="bar-label">157</text><text x="8" y="170" class="bar-label">Vietnam</text><rect x="150" y="154" width="22.5" height="19" fill="#16a34a" opacity="0.78"></rect><text x="180.5" y="169" class="bar-label">21</text>
+</svg>
+</div>
+    <div class="panel">
+<svg viewBox="0 0 720 134" role="img" aria-label="Records per REE Group">
+  <rect x="0" y="0" width="720" height="134" fill="#ffffff"></rect>
+  <text x="8" y="20" font-size="15" font-weight="700" fill="#1e293b">Records per REE Group</text>
+  <text x="8" y="50" class="bar-label">lree</text><rect x="150" y="34" width="510.0" height="19" fill="#9333ea" opacity="0.78"></rect><text x="668.0" y="49" class="bar-label">866</text><text x="8" y="80" class="bar-label">hree</text><rect x="150" y="64" width="265.6" height="19" fill="#9333ea" opacity="0.78"></rect><text x="423.6" y="79" class="bar-label">451</text><text x="8" y="110" class="bar-label">scandium</text><rect x="150" y="94" width="12.4" height="19" fill="#9333ea" opacity="0.78"></rect><text x="170.4" y="109" class="bar-label">21</text>
+</svg>
+</div>
+  </section>
+  <section class="panel">
+    <h2>Cluster by Mineral Element Count</h2>
+    
+<table>
+  <thead><tr><th></th><th>Ce</th><th>Gd</th><th>La</th><th>Nd</th><th>Sc</th><th>Sm</th><th>Y</th><th>Yb</th></tr></thead>
+  <tbody><tr><th>Cluster 0</th><td style="background:rgba(37,99,235,0.74)">181</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.08)">19</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.18)">44</td><td style="background:rgba(37,99,235,0.00)">0</td></tr><tr><th>Cluster 1</th><td style="background:rgba(37,99,235,0.22)">4</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.11)">2</td><td style="background:rgba(37,99,235,0.22)">4</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.22)">4</td><td style="background:rgba(37,99,235,0.22)">4</td><td style="background:rgba(37,99,235,0.00)">0</td></tr><tr><th>Cluster 2</th><td style="background:rgba(37,99,235,0.15)">5</td><td style="background:rgba(37,99,235,0.03)">1</td><td style="background:rgba(37,99,235,0.03)">1</td><td style="background:rgba(37,99,235,0.06)">2</td><td style="background:rgba(37,99,235,0.62)">21</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.12)">4</td><td style="background:rgba(37,99,235,0.00)">0</td></tr><tr><th>Cluster 3</th><td style="background:rgba(37,99,235,0.09)">5</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.57)">33</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.34)">20</td><td style="background:rgba(37,99,235,0.00)">0</td></tr><tr><th>Cluster 4</th><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.02)">3</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.98)">133</td><td style="background:rgba(37,99,235,0.00)">0</td></tr><tr><th>Cluster 5</th><td style="background:rgba(37,99,235,0.45)">62</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.09)">12</td><td style="background:rgba(37,99,235,0.12)">16</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.35)">48</td><td style="background:rgba(37,99,235,0.00)">0</td></tr><tr><th>Cluster 6</th><td style="background:rgba(37,99,235,0.72)">79</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.28)">30</td><td style="background:rgba(37,99,235,0.00)">0</td></tr><tr><th>Cluster 7</th><td style="background:rgba(37,99,235,0.27)">96</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.27)">97</td><td style="background:rgba(37,99,235,0.24)">85</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.23)">83</td><td style="background:rgba(37,99,235,0.00)">0</td></tr><tr><th>Cluster 8</th><td style="background:rgba(37,99,235,0.27)">4</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.07)">1</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.33)">5</td><td style="background:rgba(37,99,235,0.33)">5</td></tr><tr><th>Cluster 9</th><td style="background:rgba(37,99,235,0.33)">74</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.34)">77</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.00)">0</td><td style="background:rgba(37,99,235,0.33)">74</td><td style="background:rgba(37,99,235,0.00)">0</td></tr></tbody>
+</table>
+
+  </section>
+  <p><a href="index.html">Back to dashboard</a></p>
+</main>
+
+
+</body>
+</html>
