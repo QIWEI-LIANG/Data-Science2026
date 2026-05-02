@@ -268,6 +268,9 @@ def write_html() -> None:
     .matrix th:first-child {{ text-align:left; position:sticky; left:0; background:#fff; z-index:1; }}
     .note {{ margin-top:10px; font-size:13px; color:var(--muted); }}
     .leaflet-popup-content {{ line-height:1.45; }}
+    .popup-list {{ max-height:240px; overflow:auto; margin-top:8px; }}
+    .popup-record {{ padding:7px 0; border-top:1px solid var(--line); }}
+    .popup-record:first-child {{ border-top:0; }}
     @media (max-width:720px) {{ header, main {{ padding-left:16px; padding-right:16px; }} h1 {{ font-size:22px; }} #map {{ height:500px; }} }}
   </style>
 </head>
@@ -313,8 +316,18 @@ def write_html() -> None:
     const points = {json.dumps(records, ensure_ascii=False)};
     const clusters = {json.dumps(clusters, ensure_ascii=False)};
     const colors = {json.dumps(ELEMENT_COLORS)};
-    const map = L.map('map', {{ preferCanvas: true, worldCopyJump: true }}).setView([22, 78], 3);
+    const worldBounds = L.latLngBounds([[-85, -180], [85, 180]]);
+    const map = L.map('map', {{
+      preferCanvas: true,
+      worldCopyJump: false,
+      maxBounds: worldBounds,
+      maxBoundsViscosity: 1.0,
+      minZoom: 2
+    }}).setView([22, 78], 3);
     L.tileLayer('https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{
+      noWrap: true,
+      bounds: worldBounds,
+      minZoom: 2,
       maxZoom: 9,
       attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
     }}).addTo(map);
@@ -322,34 +335,88 @@ def write_html() -> None:
     const pointLayer = L.layerGroup().addTo(map);
     let clusterMode = false;
 
+    function esc(value) {{
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({{
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }}[ch]));
+    }}
+
     function popupFor(p, isCluster=false) {{
       const countLine = isCluster ? `<br>Clustered localities: ${{p.count}}` : '';
-      const link = p.url ? `<br><a href="${{p.url}}" target="_blank" rel="noreferrer">Mindat locality page</a>` : '';
-      return `<strong>${{isCluster ? `${{p.reserve_country}} - ${{p.element}} cluster` : p.site}}</strong><br>` +
-        `Element: ${{p.element}} (${{p.element_name}})<br>` +
-        `REE group: ${{p.group}}<br>` +
-        `Reserve country query: ${{p.reserve_country}}<br>` +
-        `Site country: ${{isCluster ? p.reserve_country : p.site_country}}${{countLine}}${{link}}`;
+      const link = p.url ? `<br><a href="${{esc(p.url)}}" target="_blank" rel="noreferrer">Mindat locality page</a>` : '';
+      return `<strong>${{esc(isCluster ? `${{p.reserve_country}} - ${{p.element}} cluster` : p.site)}}</strong><br>` +
+        `Element: ${{esc(p.element)}} (${{esc(p.element_name)}})<br>` +
+        `REE group: ${{esc(p.group)}}<br>` +
+        `Reserve country query: ${{esc(p.reserve_country)}}<br>` +
+        `Site country: ${{esc(isCluster ? p.reserve_country : p.site_country)}}${{countLine}}${{link}}`;
+    }}
+
+    function popupForGroup(group) {{
+      const items = group.items;
+      const title = items.length === 1 ? esc(items[0].site) : `${{items.length}} records at this coordinate`;
+      const rows = items.map(p => {{
+        const link = p.url ? `<br><a href="${{esc(p.url)}}" target="_blank" rel="noreferrer">Mindat locality page</a>` : '';
+        return `<div class="popup-record">` +
+          `<strong>${{esc(p.site)}}</strong><br>` +
+          `Element: ${{esc(p.element)}} (${{esc(p.element_name)}})<br>` +
+          `REE group: ${{esc(p.group)}}<br>` +
+          `Reserve country query: ${{esc(p.reserve_country)}}<br>` +
+          `Site country: ${{esc(p.site_country)}}${{link}}` +
+        `</div>`;
+      }}).join('');
+      return `<strong>${{title}}</strong><br>` +
+        `Coordinate: ${{group.lat.toFixed(5)}}, ${{group.lon.toFixed(5)}}` +
+        `<div class="popup-list">${{rows}}</div>`;
     }}
 
     function draw() {{
       pointLayer.clearLayers();
       const element = document.getElementById('elementFilter').value;
       const country = document.getElementById('countryFilter').value;
-      const source = clusterMode ? clusters : points;
       let shown = 0;
-      source.forEach(p => {{
+
+      if (!clusterMode) {{
+        const grouped = new Map();
+        points.forEach(p => {{
+          if ((element !== 'all' && p.element !== element) || (country !== 'all' && p.reserve_country !== country)) return;
+          shown += 1;
+          const key = `${{p.lat.toFixed(6)}},${{p.lon.toFixed(6)}}`;
+          if (!grouped.has(key)) grouped.set(key, {{ lat: p.lat, lon: p.lon, items: [] }});
+          grouped.get(key).items.push(p);
+        }});
+        grouped.forEach(group => {{
+          const first = group.items[0];
+          const mixedElements = new Set(group.items.map(p => p.element)).size > 1;
+          const radius = group.items.length > 1 ? Math.min(13, 5 + Math.sqrt(group.items.length) * 1.35) : 5;
+          L.circleMarker([group.lat, group.lon], {{
+            radius,
+            color: group.items.length > 1 ? '#172033' : '#ffffff',
+            weight: 2,
+            fillColor: mixedElements ? '#172033' : (colors[first.element] || '#475569'),
+            fillOpacity: 0.74,
+            opacity: 1
+          }}).bindPopup(popupForGroup(group), {{ maxWidth: 420 }}).addTo(pointLayer);
+        }});
+        document.getElementById('countLabel').textContent = `${{shown}} records shown`;
+        return;
+      }}
+
+      clusters.forEach(p => {{
         if ((element !== 'all' && p.element !== element) || (country !== 'all' && p.reserve_country !== country)) return;
-        shown += clusterMode ? p.count : 1;
-        const radius = clusterMode ? Math.min(18, 6 + Math.sqrt(p.count) * 1.25) : 5;
+        shown += p.count;
+        const radius = Math.min(18, 6 + Math.sqrt(p.count) * 1.25);
         L.circleMarker([p.lat, p.lon], {{
           radius,
           color: '#ffffff',
           weight: 2,
           fillColor: colors[p.element] || '#475569',
-          fillOpacity: clusterMode ? 0.82 : 0.72,
+          fillOpacity: 0.82,
           opacity: 1
-        }}).bindPopup(popupFor(p, clusterMode)).addTo(pointLayer);
+        }}).bindPopup(popupFor(p, true)).addTo(pointLayer);
       }});
       document.getElementById('countLabel').textContent = `${{shown}} records shown`;
     }}
