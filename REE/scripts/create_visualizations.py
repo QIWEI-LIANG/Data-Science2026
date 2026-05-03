@@ -236,31 +236,30 @@ def write_html() -> None:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Top 5 Countries REE Element Distribution</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/styles/overlayscrollbars.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc7/dist/css/adminlte.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    :root {{ --ink:#172033; --muted:#5f6f85; --line:#d8e0eb; --panel:#fff; --bg:#f5f7fb; --accent:#2563eb; }}
-    * {{ box-sizing: border-box; }}
-    body {{ margin:0; font-family:Arial, Helvetica, sans-serif; color:var(--ink); background:var(--bg); }}
-    header {{ padding:22px 28px 14px; background:#fff; border-bottom:1px solid var(--line); }}
-    h1 {{ margin:0 0 8px; font-size:26px; letter-spacing:0; }}
-    h2 {{ margin:0 0 12px; font-size:18px; }}
-    p {{ margin:0 0 10px; color:var(--muted); line-height:1.5; }}
-    main {{ padding:18px 28px 30px; }}
-    .metrics {{ display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }}
-    .metric {{ min-width:160px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px 12px; }}
-    .metric strong {{ display:block; font-size:22px; color:var(--ink); }}
-    .controls {{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:14px; }}
-    label {{ color:var(--muted); font-size:14px; }}
-    select, button {{ height:34px; border:1px solid var(--line); border-radius:6px; padding:0 9px; background:#fff; color:var(--ink); }}
-    select {{ margin-left:4px; }}
-    button {{ cursor:pointer; }}
-    button.active {{ border-color:var(--accent); background:#eff6ff; color:#1d4ed8; }}
-    #map {{ height:560px; min-height:52vh; border-bottom:1px solid var(--line); background:#eef3f8; }}
-    .legend {{ display:flex; flex-wrap:wrap; gap:8px 13px; margin-top:12px; font-size:13px; }}
+    :root {{ --ink:#172033; --muted:#5f6f85; --line:#d8e0eb; --panel:#fff; --bg:#f4f6f9; --accent:#0d6efd; }}
+    body {{ font-family:"Source Sans 3", Arial, Helvetica, sans-serif; color:var(--ink); background:var(--bg); }}
+    .app-main {{ background:var(--bg); }}
+    .brand-link {{ text-decoration:none; }}
+    .brand-image {{ width:34px; height:34px; display:inline-grid; place-items:center; border-radius:8px; background:#0d6efd; color:#fff; }}
+    .app-content-header {{ border-bottom:1px solid var(--line); background:#fff; }}
+    .page-summary {{ max-width:920px; color:var(--muted); }}
+    .metric .inner p {{ color:#f8fafc; }}
+    .controls-card .form-label {{ color:var(--muted); font-size:13px; font-weight:600; margin-bottom:4px; }}
+    .view-actions .btn.active {{ color:#fff; background:#0d6efd; border-color:#0d6efd; }}
+    #map {{ height:590px; min-height:58vh; border-radius:0 0 8px 8px; background:#eef3f8; }}
+    .legend {{ display:flex; flex-wrap:wrap; gap:8px 13px; font-size:13px; }}
     .legend span {{ display:inline-flex; gap:6px; align-items:center; }}
     .legend i {{ display:inline-block; width:11px; height:11px; border-radius:50%; }}
-    .grid {{ display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px; }}
-    section {{ margin-top:16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px; overflow:auto; }}
+    .grid {{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; align-items:stretch; }}
+    .chart-card {{ min-height:360px; }}
+    .chart-card .card-body {{ display:flex; align-items:center; overflow:auto; }}
+    .matrix-card .card-body {{ overflow:auto; }}
     svg {{ max-width:100%; height:auto; display:block; }}
     .bar-label {{ font-size:12px; fill:#334155; }}
     .matrix {{ width:100%; border-collapse:collapse; min-width:980px; }}
@@ -271,46 +270,153 @@ def write_html() -> None:
     .popup-list {{ max-height:240px; overflow:auto; margin-top:8px; }}
     .popup-record {{ padding:7px 0; border-top:1px solid var(--line); }}
     .popup-record:first-child {{ border-top:0; }}
-    @media (max-width:720px) {{ header, main {{ padding-left:16px; padding-right:16px; }} h1 {{ font-size:22px; }} #map {{ height:500px; }} }}
+    @media (max-width:992px) {{ .grid {{ grid-template-columns:1fr; }} }}
+    @media (max-width:720px) {{ .app-content-header .container-fluid, .app-content .container-fluid {{ padding-left:12px; padding-right:12px; }} #map {{ height:500px; }} .chart-card {{ min-height:0; }} }}
   </style>
 </head>
-<body>
-  <header>
-    <h1>17 REE Elements Across the Top 5 Reserve Countries</h1>
-    <p>Distribution of Mindat locality records for all 17 rare-earth elements in China, Brazil, Australia, Russia, and Vietnam.</p>
-    <div class="metrics">
-      <div class="metric"><strong>{len(records)}</strong>locality records</div>
-      <div class="metric"><strong>{len({row['site'] for row in records})}</strong>named sites</div>
-      <div class="metric"><strong>{len(elements)}</strong>REE elements</div>
-      <div class="metric"><strong>{reserve_total:,}</strong>REO tonnes in top 5 reserves</div>
-    </div>
-    <div class="controls">
-      <label>Element <select id="elementFilter"><option value="all">All 17 elements</option>{element_options}</select></label>
-      <label>Country <select id="countryFilter"><option value="all">All top 5 countries</option>{country_options}</select></label>
-      <button id="globalView" class="active" type="button">Global View</button>
-      <button id="asiaView" type="button">Asia Focus</button>
-      <button id="clusterToggle" type="button">Cluster Mode</button>
-      <span id="countLabel"></span>
-    </div>
-    <div class="legend">{legend}</div>
-  </header>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+  <div class="app-wrapper">
+    <nav class="app-header navbar navbar-expand bg-body">
+      <div class="container-fluid">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button" aria-label="Toggle sidebar">
+              <i class="bi bi-list"></i>
+            </a>
+          </li>
+          <li class="nav-item d-none d-md-block"><a href="#mapPanel" class="nav-link">Map</a></li>
+          <li class="nav-item d-none d-md-block"><a href="#matrixPanel" class="nav-link">Matrix</a></li>
+          <li class="nav-item d-none d-md-block"><a href="#chartsPanel" class="nav-link">Charts</a></li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <span id="countLabel" class="badge text-bg-primary fs-6"></span>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-  <div id="map"></div>
+    <aside class="app-sidebar bg-dark shadow" data-bs-theme="dark">
+      <div class="sidebar-brand">
+        <a href="#" class="brand-link">
+          <span class="brand-image"><i class="bi bi-gem"></i></span>
+          <span class="brand-text fw-light ms-2">REE Dashboard</span>
+        </a>
+      </div>
+      <div class="sidebar-wrapper">
+        <nav class="mt-2">
+          <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
+            <li class="nav-item"><a href="#mapPanel" class="nav-link active"><i class="nav-icon bi bi-globe2"></i><p>Distribution Map</p></a></li>
+            <li class="nav-item"><a href="#matrixPanel" class="nav-link"><i class="nav-icon bi bi-grid-3x3-gap"></i><p>Element Matrix</p></a></li>
+            <li class="nav-item"><a href="#chartsPanel" class="nav-link"><i class="nav-icon bi bi-bar-chart"></i><p>Summary Charts</p></a></li>
+          </ul>
+        </nav>
+      </div>
+    </aside>
 
-  <main>
-    <section>
-      <h2>Country by Element Locality Matrix</h2>
-      {matrix}
-      <p class="note">Counts are Mindat locality records in the processed dataset; blank/zero cells mean no valid locality records were found for that element-country pair.</p>
-    </section>
-    <div class="grid">
-      <section>{element_bar}</section>
-      <section>{country_bar}</section>
-      <section>{reserve_bar}</section>
-      <section>{group_bar}</section>
-    </div>
-  </main>
+    <main class="app-main">
+      <div class="app-content-header">
+        <div class="container-fluid py-3">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <h1 class="mb-1 fs-3">17 REE Elements Across the Top 5 Reserve Countries</h1>
+              <p class="page-summary mb-0">Distribution of Mindat locality records for all 17 rare-earth elements in China, Brazil, Australia, Russia, and Vietnam.</p>
+            </div>
+            <div class="col-lg-4 mt-3 mt-lg-0">
+              <ol class="breadcrumb float-lg-end mb-0">
+                <li class="breadcrumb-item"><a href="#mapPanel">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">REE Analysis</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <div class="app-content">
+        <div class="container-fluid py-3">
+          <div class="row g-3">
+            <div class="col-12 col-sm-6 col-xl-3">
+              <div class="small-box text-bg-primary metric">
+                <div class="inner"><h3>{len(records)}</h3><p>Locality records</p></div>
+                <i class="small-box-icon bi bi-pin-map"></i>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+              <div class="small-box text-bg-success metric">
+                <div class="inner"><h3>{len({row['site'] for row in records})}</h3><p>Named sites</p></div>
+                <i class="small-box-icon bi bi-geo-alt"></i>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+              <div class="small-box text-bg-warning metric">
+                <div class="inner"><h3>{len(elements)}</h3><p>REE elements</p></div>
+                <i class="small-box-icon bi bi-diagram-3"></i>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+              <div class="small-box text-bg-danger metric">
+                <div class="inner"><h3>{reserve_total:,}</h3><p>REO tonnes in top 5 reserves</p></div>
+                <i class="small-box-icon bi bi-database"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card controls-card mb-3">
+            <div class="card-body">
+              <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-4 col-xl-3">
+                  <label class="form-label" for="elementFilter">Element</label>
+                  <select class="form-select" id="elementFilter"><option value="all">All 17 elements</option>{element_options}</select>
+                </div>
+                <div class="col-12 col-md-4 col-xl-3">
+                  <label class="form-label" for="countryFilter">Country</label>
+                  <select class="form-select" id="countryFilter"><option value="all">All top 5 countries</option>{country_options}</select>
+                </div>
+                <div class="col-12 col-md-4 col-xl-6">
+                  <div class="btn-group view-actions" role="group" aria-label="Map view controls">
+                    <button id="globalView" class="btn btn-outline-primary active" type="button"><i class="bi bi-globe"></i> Global View</button>
+                    <button id="asiaView" class="btn btn-outline-primary" type="button"><i class="bi bi-crosshair"></i> Asia Focus</button>
+                    <button id="clusterToggle" class="btn btn-outline-secondary" type="button"><i class="bi bi-collection"></i> Cluster Mode</button>
+                  </div>
+                </div>
+              </div>
+              <div class="legend mt-3">{legend}</div>
+            </div>
+          </div>
+
+          <div id="mapPanel" class="card mb-3">
+            <div class="card-header">
+              <h2 class="card-title mb-0">Interactive Locality Map</h2>
+            </div>
+            <div class="card-body p-0">
+              <div id="map"></div>
+            </div>
+          </div>
+
+          <div id="matrixPanel" class="card matrix-card mb-3">
+            <div class="card-header">
+              <h2 class="card-title mb-0">Country by Element Locality Matrix</h2>
+            </div>
+            <div class="card-body">
+              {matrix}
+              <p class="note">Counts are Mindat locality records in the processed dataset; blank/zero cells mean no valid locality records were found for that element-country pair.</p>
+            </div>
+          </div>
+
+          <div id="chartsPanel" class="grid">
+            <div class="card chart-card"><div class="card-body">{element_bar}</div></div>
+            <div class="card chart-card"><div class="card-body">{country_bar}</div></div>
+            <div class="card chart-card"><div class="card-body">{reserve_bar}</div></div>
+            <div class="card chart-card"><div class="card-body">{group_bar}</div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc7/dist/js/adminlte.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     const points = {json.dumps(records, ensure_ascii=False)};
@@ -390,13 +496,12 @@ def write_html() -> None:
         }});
         grouped.forEach(group => {{
           const first = group.items[0];
-          const mixedElements = new Set(group.items.map(p => p.element)).size > 1;
           const radius = group.items.length > 1 ? Math.min(13, 5 + Math.sqrt(group.items.length) * 1.35) : 5;
           L.circleMarker([group.lat, group.lon], {{
             radius,
-            color: group.items.length > 1 ? '#172033' : '#ffffff',
+            color: '#ffffff',
             weight: 2,
-            fillColor: mixedElements ? '#172033' : (colors[first.element] || '#475569'),
+            fillColor: colors[first.element] || '#475569',
             fillOpacity: 0.74,
             opacity: 1
           }}).bindPopup(popupForGroup(group), {{ maxWidth: 420 }}).addTo(pointLayer);
